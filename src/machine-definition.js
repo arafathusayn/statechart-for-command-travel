@@ -2,11 +2,23 @@
 
 import { assign, createMachine } from "xstate";
 
-const initialContext = {
+export const initialContext = {
   outputs: [0],
   inputs: [0],
   index: 0,
 };
+
+/**
+ * @param {typeof initialContext} context
+ * @returns {boolean}
+ */
+export const canUndo = (context) => context.index > initialContext.index;
+
+/**
+ * @param {typeof initialContext} context
+ * @returns {boolean}
+ */
+export const canRedo = (context) => context.index < context.outputs.length - 1;
 
 export const commandMachine = createMachine(
   {
@@ -68,19 +80,28 @@ export const commandMachine = createMachine(
   {
     actions: {
       start: assign((context, event) => {
+        const inputs = [
+          ...context.inputs.slice(0, context.index + 1),
+          event.input,
+        ];
+
         return {
           ...context,
-          inputs: [...context.inputs, event.input],
+          inputs,
+          outputs: context.outputs.slice(0, context.index + 1),
         };
       }),
 
       stop: assign((context, event) => {
-        const outputs = [...context.outputs, event.output];
+        const outputs = [
+          ...context.outputs.slice(0, context.index + 1),
+          event.output,
+        ];
 
         return {
           ...context,
           outputs,
-          index: context.index + 1,
+          index: outputs.length - 1,
         };
       }),
 
@@ -113,7 +134,7 @@ export const commandMachine = createMachine(
         const last = context.outputs.length - 1;
 
         if (
-          typeof event.index === "undefined" ||
+          event.type !== "JUMP" ||
           event.index < initialContext.index ||
           event.index > last
         ) {
@@ -123,23 +144,9 @@ export const commandMachine = createMachine(
         return true;
       },
 
-      undoable: (context, _event) => {
-        if (context.index <= initialContext.index) {
-          return false;
-        }
+      undoable: (context, _event) => canUndo(context),
 
-        return true;
-      },
-
-      redoable: (context, _event) => {
-        const last = context.outputs.length - 1;
-
-        if (context.index === last) {
-          return false;
-        }
-
-        return true;
-      },
+      redoable: (context, _event) => canRedo(context),
     },
   },
 );
