@@ -1,0 +1,29 @@
+{
+  "name": "statechart-for-command-travel",
+  "version": "0.1.0",
+  "description": "A generic time-travel for app commands using finite state machine and xstate",
+  "main": "src/example/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/example/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arafathusayn/statechart-for-command-travel.git"
+  },
+  "keywords": [
+    "xstate",
+    "fsm",
+    "finite-state-machine",
+    "time-travel"
+  ],
+  "author": "Arafat Husayn <hello@arafat.dev>",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/arafathusayn/statechart-for-command-travel/issues"
+  },
+  "homepage": "https://github.com/arafathusayn/statechart-for-command-travel#readme",
+  "dependencies": {
+    "xstate": "^4.36.0"
+  }
+}
